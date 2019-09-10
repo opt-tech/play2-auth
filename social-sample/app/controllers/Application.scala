@@ -7,7 +7,6 @@ import play.api.mvc.Results._
 import play.api.mvc._
 import scalikejdbc.DB
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.reflect.{ ClassTag, classTag }
 import jp.t2v.lab.play2.auth._
@@ -18,6 +17,7 @@ import jp.t2v.lab.play2.auth.social.providers.slack.SlackController
 import play.api.Environment
 import play.api.cache.AsyncCacheApi
 import play.api.libs.ws.WSClient
+import play.api.libs.concurrent.Execution.defaultContext
 
 class Application @Inject() (components: ControllerComponents, val environment: Environment, val cacheApi: AsyncCacheApi) extends AbstractController(components) with OptionalAuthElement with AuthConfigImpl with Logout {
 
@@ -33,7 +33,7 @@ class Application @Inject() (components: ControllerComponents, val environment: 
   }
 
   def logout = Action.async { implicit request =>
-    loginSucceeded(request)
+    loginSucceeded(request)(defaultExecutionContext)
   }
 
 }
@@ -47,7 +47,7 @@ trait AuthConfigImpl extends AuthConfig {
 
   val cacheApi: AsyncCacheApi
 
-  val idContainer: AsyncIdContainer[Id] = AsyncIdContainer(new CacheIdContainer[Id](cacheApi))
+  val idContainer: AsyncIdContainer[Id] = AsyncIdContainer(new CacheIdContainer[Id](cacheApi)(classTag[Id], defaultContext))
   
   override lazy val tokenAccessor: TokenAccessor = new CookieTokenAccessor()
   

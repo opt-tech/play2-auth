@@ -1,6 +1,5 @@
 package jp.t2v.lab.play2.auth
 
-import play.api.Mode
 import play.api.mvc._
 
 import scala.concurrent.{ ExecutionContext, Future }

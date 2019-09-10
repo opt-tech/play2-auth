@@ -1,7 +1,6 @@
 package jp.t2v.lab.play2.auth
 
 import play.api.cache.AsyncCacheApi
-import play.api.Play._
 
 import scala.annotation.tailrec
 import scala.util.Random
