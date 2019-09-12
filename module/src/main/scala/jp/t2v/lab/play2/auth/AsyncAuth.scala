@@ -1,12 +1,11 @@
 package jp.t2v.lab.play2.auth
 
-import play.api.Mode
 import play.api.mvc._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
 trait AsyncAuth {
-    self: AuthConfig with Controller =>
+    self: AuthConfig with AbstractController =>
 
   def authorized(authority: Authority)(implicit request: RequestHeader, context: ExecutionContext): Future[Either[Result, (User, ResultUpdater)]] = {
     restoreUser collect {
@@ -38,11 +37,7 @@ trait AsyncAuth {
   }
 
   private[auth] def extractToken(request: RequestHeader): Option[AuthenticityToken] = {
-    if (environment.mode == Mode.Test) {
-      request.headers.get("PLAY2_AUTH_TEST_TOKEN") orElse tokenAccessor.extract(request)
-    } else {
-      tokenAccessor.extract(request)
-    }
+    tokenAccessor.extract(request)
   }
 
 }
